@@ -43,23 +43,23 @@ export const createWorker = /* GraphQL */ `
       icNo
       phoneNo
       speciality
-      offers {
-        id
-        customerId
-        workerId
-        jobId
-        price
-        sentAt
-        status
-      }
-      appointments {
-        id
-        customerId
-        workerId
-        offerId
-        time
-        status
-      }
+      # offers {
+      #   id
+      #   customerId
+      #   workerId
+      #   jobId
+      #   price
+      #   sentAt
+      #   status
+      # }
+      # appointments {
+      #   id
+      #   customerId
+      #   workerId
+      #   offerId
+      #   time
+      #   status
+      # }
     }
   }
 `;
@@ -149,24 +149,25 @@ export const updateWorker = /* GraphQL */ `
       email
       icNo
       phoneNo
+      isActive
       speciality
-      offers {
-        id
-        customerId
-        workerId
-        jobId
-        price
-        sentAt
-        status
-      }
-      appointments {
-        id
-        customerId
-        workerId
-        offerId
-        time
-        status
-      }
+      # offers {
+      #   id
+      #   customerId
+      #   workerId
+      #   jobId
+      #   price
+      #   sentAt
+      #   status
+      # }
+      # appointments {
+      #   id
+      #   customerId
+      #   workerId
+      #   offerId
+      #   time
+      #   status
+      # }
     }
   }
 `;

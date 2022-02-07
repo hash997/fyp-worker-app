@@ -25,7 +25,7 @@ import {
   RootStackParamList,
   RootTabParamList,
   RootTabScreenProps,
-} from "../types";
+} from "../types/types";
 import LinkingConfiguration from "./LinkingConfiguration";
 import { Ionicons } from "@expo/vector-icons";
 import { Auth, Hub } from "aws-amplify";
@@ -34,6 +34,11 @@ import SignIn from "../screens/SignInScreen";
 import SignUp from "../screens/SignUpScreen";
 import { useEffect } from "react";
 import { HubCallback } from "@aws-amplify/core/lib/Hub";
+import JobRequestsScreen from "../screens/JobRequestsScreen";
+import { MaterialIcons } from "@expo/vector-icons";
+import SendOfferScreen from "../screens/SendOfferScreen";
+import { NearByJobsScreen } from "../screens/NearByJobsScreen";
+import { Entypo } from "@expo/vector-icons";
 
 export default function Navigation({
   colorScheme,
@@ -64,7 +69,6 @@ export default function Navigation({
       })
       .catch((error) => {
         setUser(undefined);
-        console.log("error", error);
       });
     return () => {
       Hub.remove("auth", authListener);
@@ -96,6 +100,11 @@ function RootNavigator() {
         component={BottomTabNavigator}
         options={{ headerShown: false }}
       />
+      <Stack.Screen name="Appointments" component={AppointmentsScreen} />
+      <Stack.Group>
+        <Stack.Screen name="JobRequests" component={JobRequestsScreen} />
+        <Stack.Screen name="SendOffer" component={SendOfferScreen} />
+      </Stack.Group>
       <Stack.Screen
         name="NotFound"
         component={NotFoundScreen}
@@ -140,12 +149,32 @@ function BottomTabNavigator() {
               <FontAwesome
                 name="info-circle"
                 size={25}
-                color={Colors[colorScheme].text}
+                color={"#0C4160"}
                 style={{ marginRight: 15 }}
               />
             </Pressable>
           ),
         })}
+      />
+      <BottomTab.Screen
+        name="JobRequests"
+        component={JobRequestsScreen}
+        options={{
+          title: "Job Requests",
+          tabBarIcon: ({ color }) => (
+            <MaterialIcons size={24} name="handyman" color={color} />
+          ),
+        }}
+      />
+      <BottomTab.Screen
+        name="NearbyJobs"
+        component={NearByJobsScreen}
+        options={{
+          title: "Nearby Jobs",
+          tabBarIcon: ({ color }) => (
+            <Entypo name="location" size={24} color={color} />
+          ),
+        }}
       />
       <BottomTab.Screen
         name="Appointments"
@@ -162,7 +191,7 @@ function BottomTabNavigator() {
         name="Settings"
         component={SettingsScreen}
         options={{
-          title: "Appointments",
+          title: "Settings",
           tabBarIcon: ({ color }) => (
             <Ionicons name="ios-settings" size={24} color={color} />
           ),

@@ -43,23 +43,29 @@ export const workerById = /* GraphQL */ `
       icNo
       phoneNo
       speciality
-      offers {
-        id
-        customerId
-        workerId
-        jobId
-        price
-        sentAt
-        status
-      }
-      appointments {
-        id
-        customerId
-        workerId
-        offerId
-        time
-        status
-      }
+      hourlyRate
+      city
+      lat
+      lng
+      isActive
+
+      # offers {
+      #   id
+      #   customerId
+      #   workerId
+      #   jobId
+      #   price
+      #   sentAt
+      #   status
+      # }
+      # appointments {
+      #   id
+      #   customerId
+      #   workerId
+      #   offerId
+      #   time
+      #   status
+      # }
     }
   }
 `;
@@ -106,6 +112,74 @@ export const offerById = /* GraphQL */ `
       price
       sentAt
       status
+    }
+  }
+`;
+
+// query MyQuery {
+//   jobsByCityAndSpeciality(city: "Cyberjaya", speciality: DRIVER) {
+//     city
+//     completedAt
+//     customerId
+//     description
+//     id
+//     sentAt
+//     speciality
+//     status
+//     title
+//     totalCost
+//     location {
+//       address
+//       city
+//       customerId
+//       lat
+//       id
+//       lng
+//       state
+//     }
+//   }
+// }
+
+export const jobsByCityAndSpeciality = /* GraphQL */ `
+ query jobsByCityAndSpeciality($city: String!, $speciality: WorkerSpeciality!) {
+  jobsByCityAndSpeciality(city: $city, speciality: $speciality) {
+
+     city
+     completedAt
+     customerId
+     description
+     id
+     sentAt
+     speciality
+     status
+     title
+     totalCost
+     location {
+       address
+       city
+       customerId
+       lat
+       id
+       lng
+       state
+     }
+   }
+ }
+ `;
+
+
+export const jobsToWorkerByWorkerId = /* GraphQL */ `
+  query JobsToWorkerByWorkerId($workerId: ID!) {
+    jobsToWorkerByWorkerId(workerId: $workerId) {
+      id
+      customerId
+      description
+      title
+      sentAt
+      status
+      totalCost
+      workerId
+      completedAt
     }
   }
 `;

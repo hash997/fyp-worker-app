@@ -1,18 +1,46 @@
-import { StatusBar } from 'expo-status-bar';
-import { Platform, StyleSheet } from 'react-native';
+import { StatusBar } from "expo-status-bar";
 
-import EditScreenInfo from '../components/EditScreenInfo';
-import { Text, View } from '../components/Themed';
+import EditScreenInfo from "../components/EditScreenInfo";
+import { View, Switch, Platform, StyleSheet, Button } from "react-native";
+import { useState } from "react";
+import { API, Auth } from "aws-amplify";
+import { updateWorker } from "../src/graphql/mutations";
+import { useAuth } from "../state-store/auth-state";
 
 export default function ModalScreen() {
+  const [isEnabled, setIsEnabled] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
+
+  const toggleSwitch = async () => {
+    try {
+      const updateRes = await API.graphql({
+        query: updateWorker,
+        variables: {
+          updateWorkerInput: {
+            id: user.id,
+            isActive: !isEnabled,
+          },
+          // id:
+        },
+      });
+    } catch (error) {
+      console.log("shit went sout =>", error);
+    }
+    setIsEnabled((previousState) => !previousState);
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Modal</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="/screens/ModalScreen.tsx" />
-
-      {/* Use a light status bar on iOS to account for the black space above the modal */}
-      <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
+      <Switch
+        // trackColor={{ false: "#767577", true: "#81b0ff" }}
+        // thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+        // ios_backgroundColor="#3e3e3e"
+        onValueChange={toggleSwitch}
+        value={isEnabled}
+        disabled={loading}
+      />
+      <Button title="Sign Out" onPress={() => Auth.signOut()} />
     </View>
   );
 }
@@ -20,16 +48,16 @@ export default function ModalScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   title: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   separator: {
     marginVertical: 30,
     height: 1,
-    width: '80%',
+    width: "80%",
   },
 });

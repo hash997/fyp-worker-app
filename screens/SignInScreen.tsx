@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { AppStyles } from "../AppStyles";
 
-import { RootStackScreenProps } from "../types";
+import { RootStackScreenProps } from "../types/types";
 import { Formik } from "formik";
 
 import * as Yup from "yup";
@@ -38,15 +38,12 @@ const SignIn = ({ navigation }: RootStackScreenProps<"SignIn">) => {
         initialValues={{ email: "", password: "" }}
         validationSchema={SigninSchema}
         onSubmit={async (values) => {
-          console.log(values);
           try {
             const signInRes = await Auth.signIn({
               username: values.email,
               password: values.password,
             });
-            console.log("signInRes =>", signInRes);
           } catch (error) {
-            console.log("shit went south signing in =>", error);
             // @ts-ignore
             setError(error?.message);
           }

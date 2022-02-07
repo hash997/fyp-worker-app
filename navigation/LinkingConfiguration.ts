@@ -7,7 +7,7 @@
 import { LinkingOptions } from "@react-navigation/native";
 import * as Linking from "expo-linking";
 
-import { RootStackParamList } from "../types";
+import { RootStackParamList } from "../types/types";
 
 const linking: LinkingOptions<RootStackParamList> = {
   prefixes: [Linking.makeUrl("/")],
@@ -25,6 +25,12 @@ const linking: LinkingOptions<RootStackParamList> = {
               AppointmentsScreen: "Appointments",
             },
           },
+          JobRequests: {
+            screens: {
+              JobRequestsScreen: "JobRequests",
+              SendOfferScreen: "SendOffer",
+            },
+          },
 
           Settings: {
             screens: {
@@ -33,6 +39,7 @@ const linking: LinkingOptions<RootStackParamList> = {
           },
         },
       },
+
       Modal: "modal",
       NotFound: "*",
     },

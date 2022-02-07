@@ -1,6 +1,6 @@
 import React from "react";
 import { Text, View } from "../components/Themed";
-import { RootTabScreenProps } from "../types";
+import { RootTabScreenProps } from "../types/types";
 import { AppStyles } from "../AppStyles";
 
 const AppointmentsScreen = ({
