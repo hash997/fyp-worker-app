@@ -1,10 +1,27 @@
+import { Worker } from "../src/API";
+
 export interface JobRequestState {
   job: JobRequest;
   currentStep: number;
 }
+
+interface LngLtd {
+  lat: number;
+  lng: number;
+}
+interface LocationInfo {
+  address: string;
+  city: string;
+  state: string;
+  country: string;
+  lng: string;
+  lat: string;
+}
 export interface AuthState {
-  user: any;
+  user: Worker | undefined;
   congnitoUser: any;
+  isActive: boolean;
+  location: LocationInfo | undefined;
 }
 
 export interface JobRequest {

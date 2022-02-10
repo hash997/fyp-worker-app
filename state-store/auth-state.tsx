@@ -12,6 +12,8 @@ import {
 const initialState: AuthState = {
   user: undefined,
   congnitoUser: undefined,
+  isActive: false,
+  location: undefined,
 };
 interface Action {
   type: string;
@@ -45,11 +47,14 @@ export const AuthProvider: React.FC = ({ children }) => {
         variables: { workerId: userId },
       });
 
+      console.log("userRes => ", userRes);
+
       dispatch({
         type: "update",
         payload: {
           ...currentUser,
           user: userRes?.data.workerById,
+          isActive: userRes?.data.workerById.isActive,
         },
       });
     } catch (error) {

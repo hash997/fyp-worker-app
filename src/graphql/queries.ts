@@ -40,32 +40,30 @@ export const workerById = /* GraphQL */ `
       fName
       lName
       email
-      icNo
       phoneNo
+      icNo
       speciality
       hourlyRate
       city
       lat
       lng
       isActive
-
-      # offers {
-      #   id
-      #   customerId
-      #   workerId
-      #   jobId
-      #   price
-      #   sentAt
-      #   status
-      # }
-      # appointments {
-      #   id
-      #   customerId
-      #   workerId
-      #   offerId
-      #   time
-      #   status
-      # }
+      appointments {
+        customerId
+        id
+        offerId
+        status
+        time
+        workerId
+      }
+      offers {
+        id
+        jobId
+        customerId
+        workerId
+        sentAt
+        status
+      }
     }
   }
 `;
@@ -141,32 +139,33 @@ export const offerById = /* GraphQL */ `
 // }
 
 export const jobsByCityAndSpeciality = /* GraphQL */ `
- query jobsByCityAndSpeciality($city: String!, $speciality: WorkerSpeciality!) {
-  jobsByCityAndSpeciality(city: $city, speciality: $speciality) {
-
-     city
-     completedAt
-     customerId
-     description
-     id
-     sentAt
-     speciality
-     status
-     title
-     totalCost
-     location {
-       address
-       city
-       customerId
-       lat
-       id
-       lng
-       state
-     }
-   }
- }
- `;
-
+  query jobsByCityAndSpeciality(
+    $city: String!
+    $speciality: WorkerSpeciality!
+  ) {
+    jobsByCityAndSpeciality(city: $city, speciality: $speciality) {
+      city
+      completedAt
+      customerId
+      description
+      id
+      sentAt
+      speciality
+      status
+      title
+      totalCost
+      location {
+        address
+        city
+        customerId
+        lat
+        id
+        lng
+        state
+      }
+    }
+  }
+`;
 
 export const jobsToWorkerByWorkerId = /* GraphQL */ `
   query JobsToWorkerByWorkerId($workerId: ID!) {
@@ -272,6 +271,7 @@ export const offersByWorkerId = /* GraphQL */ `
       price
       sentAt
       status
+      jobRequest
     }
   }
 `;

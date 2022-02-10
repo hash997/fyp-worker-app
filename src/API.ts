@@ -98,8 +98,17 @@ export type Appointment = {
   workerId: string;
   offerId: string;
   time: string;
-  status?: string | null;
+  status?: AppointmentStatus;
 };
+
+export enum AppointmentStatus {
+  UPCOMING = "UPCOMING",
+  CUSTOMER_CANCELLED = "CUSTOMER_CANCELLED",
+  WORKER_CANCELED = "WORKER_CANCELED",
+  COMPLETED = "COMPLETED",
+  CUSTOMER_NO_SHOW_UP = "CUSTOMER_NO_SHOW_UP",
+  WORER_NO_SHOW_UP = "WORER_NO_SHOW_UP",
+}
 
 export type CreateWorkerInput = {
   fName: string;
@@ -128,8 +137,13 @@ export type Worker = {
   icNo: string;
   phoneNo: string;
   speciality: WorkerSpeciality;
-  offers: Array<Offer | null>;
-  appointments?: Array<Appointment | null> | null;
+  offers: Offer[] | [];
+  city: string;
+  lat: string;
+  lng: string;
+  hourlyRate: number;
+  isActive: boolean;
+  appointments?: Appointment[] | [];
 };
 
 export type CreateJobRequestInput = {

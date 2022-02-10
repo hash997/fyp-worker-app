@@ -1,14 +1,22 @@
 import React, { Dispatch, Reducer } from "react";
 import { useReducer, useContext, createContext } from "react";
-import { JobRequest, JobRequestState } from "../job-request-types";
+import { Appointment } from "../types/gqlTypes";
+import { JobRequest, JobRequestState } from "../types/job-request-types";
 
-const initialState: JobRequestState = {
-  currentStep: 0,
-  // job: undefined,
-} as JobRequestState;
+export interface Jobs {
+  jobs: JobRequest[] | [];
+  acceptedJobs: JobRequest[] | [];
+  appoitments: Appointment | [];
+}
+
+const initialState: Jobs = {
+  jobs: [],
+  acceptedJobs: [],
+  appoitments: [],
+} as Jobs;
 interface Action {
   type: string;
-  payload?: JobRequestState;
+  payload?: Jobs;
 }
 
 const JobRequestStateContext = createContext(initialState);
@@ -16,10 +24,11 @@ const JobRequestDispatchContext = createContext<Dispatch<Action>>(
   {} as Dispatch<Action>
 );
 
-const reducer = (currentJob: JobRequestState, action: Action) => {
+const reducer = (currentJob: Jobs, action: Action) => {
   switch (action.type) {
     case "update":
       if (!action.payload) throw new Error("payload is empty");
+
       return (currentJob = action.payload);
     case "clear":
       return (currentJob = initialState);

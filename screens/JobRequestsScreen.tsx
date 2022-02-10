@@ -16,7 +16,6 @@ const JobRequestsScreen = ({
 
   const getJobs = async () => {
     if (!user) {
-      console.log("user is not defined");
       return;
     }
     try {
@@ -27,7 +26,7 @@ const JobRequestsScreen = ({
 
       setJobs(jobs?.data?.jobsToWorkerByWorkerId);
     } catch (error) {
-      console.log("shit went south getting jobs to worker", error);
+      // console.log("shit went south getting jobs to worker", error);
     }
   };
 
