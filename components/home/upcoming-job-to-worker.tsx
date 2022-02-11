@@ -3,10 +3,10 @@ import { TouchableOpacity, useColorScheme } from "react-native";
 import { AppStyles } from "../../AppStyles";
 
 import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { JobRequestToWorker } from "../../src/API";
+import { dayToString, formatAMPM, monthToString } from "../../helpers/time";
 
-const UpcomingJob = () => {
-  const theme = useColorScheme();
-
+const UpcomingJobToWorker = ({ job }: { job: JobRequestToWorker }) => {
   return (
     <View style={AppStyles.container}>
       <View
@@ -57,7 +57,7 @@ const UpcomingJob = () => {
                   color: "#0C4160",
                 }}
               >
-                H
+                {job?.customer?.fName[0]}
               </Text>
             </View>
             <View style={{ padding: 5, marginLeft: 5 }}>
@@ -69,7 +69,7 @@ const UpcomingJob = () => {
                   color: "#0C4160",
                 }}
               >
-                Jerry p.Smith
+                {job?.customer?.fName}
               </Text>
               <Text
                 style={{
@@ -80,7 +80,13 @@ const UpcomingJob = () => {
               >
                 Tools needed
               </Text>
-              <Text style={{ color: "#0C4160" }}>Today 6:30pm</Text>
+              <Text style={{ color: "#0C4160" }}>
+                {" "}
+                {dayToString(new Date(job?.time).getDay())}{" "}
+                {formatAMPM(new Date(job.time))}{" "}
+                {monthToString(new Date(job?.time).getMonth())?.slice(0, 3)}{" "}
+                {new Date(job?.time).getDate()}
+              </Text>
             </View>
           </View>
           <View
@@ -139,13 +145,9 @@ const UpcomingJob = () => {
         </View>
         <View>
           <Text style={{ fontSize: 20, color: "#0C4160", fontWeight: "700" }}>
-            Job Title
+            {job?.title}
           </Text>
-          <Text style={{ color: "#0C4160" }}>
-            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed
-            diam.Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed
-            diam.Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed...
-          </Text>
+          <Text style={{ color: "#0C4160" }}>{job?.description}</Text>
         </View>
       </View>
     </View>
@@ -158,4 +160,4 @@ export const styles = StyleSheet.create({
   },
 });
 
-export default UpcomingJob;
+export default UpcomingJobToWorker;

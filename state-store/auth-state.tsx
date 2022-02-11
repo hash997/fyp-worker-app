@@ -2,6 +2,8 @@ import { Hub, HubCallback } from "@aws-amplify/core";
 import { API, Auth } from "aws-amplify";
 import React, { Dispatch, Reducer, useEffect } from "react";
 import { useReducer, useContext, createContext } from "react";
+import { getCurretnLoc } from "../helpers/get-current-loc";
+import { getPlaceInformation } from "../helpers/get-location-details";
 import { workerById } from "../src/graphql/queries";
 import {
   AuthState,
@@ -13,7 +15,6 @@ const initialState: AuthState = {
   user: undefined,
   congnitoUser: undefined,
   isActive: false,
-  location: undefined,
 };
 interface Action {
   type: string;
@@ -24,6 +25,8 @@ const AuthStateContext = createContext(initialState);
 const AuthDispatchContext = createContext<Dispatch<Action>>(
   {} as Dispatch<Action>
 );
+
+const apiKey = "AIzaSyDJHF_JXu4QD7YeJCRgyRp-Yqez7JLR29A";
 
 const reducer = (currentUser: AuthState, action: Action) => {
   switch (action.type) {
@@ -46,8 +49,6 @@ export const AuthProvider: React.FC = ({ children }) => {
         query: workerById,
         variables: { workerId: userId },
       });
-
-      console.log("userRes => ", userRes);
 
       dispatch({
         type: "update",
@@ -105,6 +106,8 @@ export const AuthProvider: React.FC = ({ children }) => {
       abortController.abort();
     };
   }, []);
+
+  // useEffect(() => {}, [currentUser.isActive]);
 
   return (
     <AuthDispatchContext.Provider value={dispatch}>

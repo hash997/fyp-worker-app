@@ -11,8 +11,9 @@ import {
   DarkTheme,
 } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import * as React from "react";
-import { ColorSchemeName, Pressable } from "react-native";
+import React, { useState } from "react";
+import { Alert, ColorSchemeName, Pressable } from "react-native";
+import { Circle } from "react-native-progress";
 
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
@@ -28,59 +29,117 @@ import {
 } from "../types/types";
 import LinkingConfiguration from "./LinkingConfiguration";
 import { Ionicons } from "@expo/vector-icons";
-import { Auth, Hub } from "aws-amplify";
-import { useState } from "react";
+
 import SignIn from "../screens/SignInScreen";
 import SignUp from "../screens/SignUpScreen";
 import { useEffect } from "react";
-import { HubCallback } from "@aws-amplify/core/lib/Hub";
+
 import JobRequestsScreen from "../screens/JobRequestsScreen";
 import { MaterialIcons } from "@expo/vector-icons";
 import SendOfferScreen from "../screens/SendOfferScreen";
 import { NearByJobsScreen } from "../screens/NearByJobsScreen";
 import { Entypo } from "@expo/vector-icons";
+import { useAuth } from "../state-store/auth-state";
+import { View, Text } from "react-native";
+import { API } from "aws-amplify";
+import {
+  onJobCreated,
+  onJobToWorkerCreatedSubcription,
+} from "../src/graphql/subscriptions";
 
 export default function Navigation({
   colorScheme,
 }: {
   colorScheme: ColorSchemeName;
 }) {
-  const [user, setUser] = useState<any>(undefined);
-
-  const authListener: HubCallback = async ({ payload: { event, data } }) => {
-    switch (event) {
-      case "signIn":
-        setUser(data);
-        break;
-      case "signOut":
-        setUser(undefined);
-        break;
-    }
-  };
+  const { user, isActive } = useAuth();
+  const [showAlert, setShowAlert] = useState({
+    showNearByJob: false,
+    showJobRequest: false,
+  });
 
   useEffect(() => {
-    const abortController = new AbortController();
+    if (!isActive || !user) return;
+    const onJobCreatedSub = API.graphql(
+      // @ts-ignore
+      {
+        query: onJobCreated,
+        variables: {
+          city: "Cyberjaya",
+          speciality: "HANDYMAN",
+        },
+      }
+      // @ts-ignore
+    ).subscribe({
+      // @ts-ignore
+      next: ({ _, value }) => {
+        // console.log("values", value);
+        setShowAlert({ showJobRequest: false, showNearByJob: true });
+      },
+      //@ts-ignore
+      error: (error) => {
+        console.warn(error);
+      },
+    });
 
-    Hub.listen("auth", authListener);
+    const onJobToWorkerCreatedSub = API.graphql(
+      // @ts-ignore
+      {
+        query: onJobToWorkerCreatedSubcription,
+        variables: {
+          workerId: user?.id,
+        },
+      }
+      // @ts-ignore
+    ).subscribe({
+      // @ts-ignore
+      next: ({ _, value }) => {
+        setShowAlert({ showJobRequest: true, showNearByJob: false });
 
-    Auth.currentAuthenticatedUser()
-      .then((data) => {
-        setUser(data);
-      })
-      .catch((error) => {
-        setUser(undefined);
-      });
+        // console.log("values", value);
+      },
+      //@ts-ignore
+      error: (error) => {
+        console.warn(error);
+      },
+    });
+
     return () => {
-      Hub.remove("auth", authListener);
-      abortController.abort();
+      onJobCreatedSub.unsubscribe();
+      onJobToWorkerCreatedSub.unsubscribe();
     };
-  }, []);
+  }, [user]);
+
+  useEffect(() => {}, [showAlert]);
+
+  console.log("showAlert", showAlert);
+
+  const createTwoButtonAlert = (title: string, description: string) =>
+    Alert.alert(title, description, [
+      {
+        text: "Cancel",
+        onPress: () =>
+          setShowAlert({ showNearByJob: false, showJobRequest: false }),
+        style: "cancel",
+      },
+      { text: "OK", onPress: () => console.log("OK Pressed") },
+    ]);
 
   return (
     <NavigationContainer
       linking={LinkingConfiguration}
       theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
     >
+      {showAlert.showJobRequest &&
+        createTwoButtonAlert(
+          "New Job Near you",
+          "New job available job near by you"
+        )}
+      {showAlert.showNearByJob &&
+        createTwoButtonAlert(
+          "New Job Request Sent to you",
+          "Someone has sent you a job request"
+        )}
       {user ? <RootNavigator /> : <AuthNavigator />}
     </NavigationContainer>
   );

@@ -204,6 +204,37 @@ export const updateJobRequest = /* GraphQL */ `
     }
   }
 `;
+// updateJobRequestToWorker(updateJobReqestToWorkerInput: {id: "", status: ACCEPTED}) {
+//   completedAt
+//   customerId
+//   description
+// }
+export const updateJobRequestToWorker = /* GraphQL */ `
+  mutation updateJobRequestToWorker(
+    $updateJobReqestToWorkerInput: UpdateJobRequestToWorkerInput!
+  ) {
+    updateJobRequestToWorker(
+      updateJobReqestToWorkerInput: $updateJobReqestToWorkerInput
+    ) {
+      id
+      customerId
+      location {
+        id
+        lng
+        lat
+        city
+      }
+      description
+      title
+      sentAt
+      status
+      totalCost
+      workerId
+      completedAt
+      time
+    }
+  }
+`;
 export const updateOffer = /* GraphQL */ `
   mutation UpdateOffer($updateOfferInput: UpdateOfferInput!) {
     updateOffer(updateOfferInput: $updateOfferInput) {

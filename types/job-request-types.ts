@@ -10,10 +10,7 @@ interface LngLtd {
   lng: number;
 }
 interface LocationInfo {
-  address: string;
   city: string;
-  state: string;
-  country: string;
   lng: string;
   lat: string;
 }
@@ -21,7 +18,11 @@ export interface AuthState {
   user: Worker | undefined;
   congnitoUser: any;
   isActive: boolean;
-  location: LocationInfo | undefined;
+}
+
+export interface Loading {
+  gettingLocation: boolean;
+  gettingUser: boolean;
 }
 
 export interface JobRequest {

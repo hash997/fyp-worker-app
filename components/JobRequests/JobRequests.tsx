@@ -1,18 +1,68 @@
 import { Entypo } from "@expo/vector-icons";
-import React, { useState } from "react";
+import { API } from "aws-amplify";
+import React, { useEffect, useState } from "react";
 import { Text, View, TouchableOpacity, TextInput } from "react-native";
 import { AppStyles } from "../../AppStyles";
-import { JobRequestToWorker } from "../../src/API";
+import { dayToString, formatAMPM, monthToString } from "../../helpers/time";
+import { JobRequestToWorker, JobStatus, Offer } from "../../src/API";
+import { updateJobRequestToWorker } from "../../src/graphql/mutations";
+import { useAuth } from "../../state-store/auth-state";
 
-const JobRequests = ({ job }: { job: JobRequestToWorker }) => {
-  const [offer, setOffer] = useState(0);
+const JobRequests = ({
+  job,
+  getJobs,
+}: {
+  job: JobRequestToWorker;
+  getJobs: () => Promise<void>;
+}) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | undefined>();
+
+  const handleAcceptJob = async () => {
+    if (!job.id) throw new Error("job id is undefined");
+
+    setLoading(true);
+    try {
+      const updateJobReqRes = await API.graphql({
+        query: updateJobRequestToWorker,
+        variables: {
+          updateJobReqestToWorkerInput: {
+            id: job?.id,
+            status: JobStatus.ACCEPTED,
+          },
+        },
+      });
+
+      await getJobs();
+    } catch (error) {
+      setError("error accepting job");
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <View style={AppStyles.container}>
+        <Text>Loading ...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={AppStyles.container}>
+        <Text>{error}</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={AppStyles.container}>
       <View
         style={{
           // height: 200,
           width: "100%",
-          borderColor: "#136494",
+          borderColor: job.status === JobStatus.ACCEPTED ? "green" : "#0C4160",
           borderWidth: 1.4,
           borderRadius: 10,
           padding: 10,
@@ -58,27 +108,23 @@ const JobRequests = ({ job }: { job: JobRequestToWorker }) => {
           </View>
           <View style={{ marginTop: 10 }}>
             <Text style={{ fontSize: 10, color: "#0C4160", fontWeight: "400" }}>
+              Prefered Time
+            </Text>
+            <Text style={{ color: "#0C4160" }}>
+              {dayToString(new Date(job?.time).getDay())}{" "}
+              {formatAMPM(new Date(job.time))} -{" "}
+              {monthToString(new Date(job?.time).getMonth())}{" "}
+              {new Date(job?.time).getDate()}
+            </Text>
+          </View>
+          <View style={{ marginTop: 10 }}>
+            <Text style={{ fontSize: 10, color: "#0C4160", fontWeight: "400" }}>
               Job Description
             </Text>
             <Text style={{ color: "#0C4160" }}>{job?.description}</Text>
           </View>
         </View>
 
-        <View style={{ marginTop: 10 }}>
-          <TextInput
-            style={{
-              width: "100%",
-              borderColor: "#136494",
-              borderWidth: 1,
-              borderRadius: 5,
-              padding: 10,
-            }}
-            keyboardType="numeric"
-            value={offer.toString() === "0" ? "" : offer.toString()}
-            onChangeText={(text) => setOffer(+text)}
-            placeholder="Enter your offer here"
-          />
-        </View>
         <View
           style={{
             flexDirection: "row",
@@ -89,16 +135,19 @@ const JobRequests = ({ job }: { job: JobRequestToWorker }) => {
           <TouchableOpacity
             style={{
               width: "100%",
-              backgroundColor: "#0C4160",
+              backgroundColor:
+                job.status === JobStatus.ACCEPTED ? "green" : "#0C4160",
               padding: 10,
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
               borderRadius: 10,
             }}
-            onPress={() => {}}
+            onPress={handleAcceptJob}
           >
-            <Text style={{ color: "white", fontSize: 20 }}>Send Offer</Text>
+            <Text style={{ color: "white", fontSize: 20 }}>
+              {job.status === JobStatus.CREATED ? "Accepte Job " : job?.status}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>

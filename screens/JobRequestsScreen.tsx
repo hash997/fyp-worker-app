@@ -6,13 +6,18 @@ import JobRequests from "../components/JobRequests/JobRequests";
 import { JobRequestToWorker } from "../src/API";
 import { jobsToWorkerByWorkerId } from "../src/graphql/queries";
 import { useAuth } from "../state-store/auth-state";
+import {
+  useDispatchJobRequest,
+  useJobRequest,
+} from "../state-store/job-requests-provider";
 import { RootTabScreenProps } from "../types/types";
 
 const JobRequestsScreen = ({
   navigation,
 }: RootTabScreenProps<"JobRequests">) => {
-  const [jobs, setJobs] = useState<JobRequestToWorker[] | undefined>(undefined);
   const { user } = useAuth();
+  const currentJobs = useJobRequest();
+  const dispatchJobs = useDispatchJobRequest();
 
   const getJobs = async () => {
     if (!user) {
@@ -24,21 +29,19 @@ const JobRequestsScreen = ({
         variables: { workerId: user.id },
       });
 
-      setJobs(jobs?.data?.jobsToWorkerByWorkerId);
-    } catch (error) {
-      // console.log("shit went south getting jobs to worker", error);
-    }
+      dispatchJobs({
+        type: "update",
+        payload: {
+          ...currentJobs,
+          jobToWorker: jobs.data.jobsToWorkerByWorkerId,
+        },
+      });
+    } catch (error) {}
   };
 
-  useEffect(() => {
-    getJobs();
-  }, []);
+  useEffect(() => {}, [currentJobs]);
 
-  useEffect(() => {
-    getJobs();
-  }, [user]);
-
-  if (!jobs || jobs.length === 0) {
+  if (!currentJobs.jobToWorker || currentJobs.jobToWorker.length === 0) {
     return (
       <View style={AppStyles.container}>
         <Text>You have no Jobs at the moments</Text>
@@ -49,8 +52,8 @@ const JobRequestsScreen = ({
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
       <ScrollView>
-        {jobs.map((job) => (
-          <JobRequests job={job} key={job.id} />
+        {currentJobs.jobToWorker.map((job) => (
+          <JobRequests job={job} key={job.id} getJobs={getJobs} />
         ))}
       </ScrollView>
     </View>

@@ -114,55 +114,41 @@ export const offerById = /* GraphQL */ `
   }
 `;
 
-// query MyQuery {
-//   jobsByCityAndSpeciality(city: "Cyberjaya", speciality: DRIVER) {
-//     city
-//     completedAt
-//     customerId
-//     description
-//     id
-//     sentAt
-//     speciality
-//     status
-//     title
-//     totalCost
-//     location {
-//       address
-//       city
-//       customerId
-//       lat
-//       id
-//       lng
-//       state
-//     }
-//   }
-// }
-
 export const jobsByCityAndSpeciality = /* GraphQL */ `
   query jobsByCityAndSpeciality(
     $city: String!
     $speciality: WorkerSpeciality!
   ) {
     jobsByCityAndSpeciality(city: $city, speciality: $speciality) {
+      id
       city
       completedAt
       customerId
       description
-      id
-      sentAt
-      speciality
-      status
-      title
-      totalCost
       location {
         address
         city
         customerId
-        lat
         id
+        lat
         lng
         state
       }
+      offers {
+        id
+        customerId
+        jobId
+        price
+        sentAt
+        status
+        suggestedTime
+        workerId
+      }
+      sentAt
+      speciality
+      status
+      totalCost
+      title
     }
   }
 `;
@@ -172,6 +158,22 @@ export const jobsToWorkerByWorkerId = /* GraphQL */ `
     jobsToWorkerByWorkerId(workerId: $workerId) {
       id
       customerId
+      location {
+        id
+        lng
+        lat
+        city
+      }
+      customer {
+        fName
+        lName
+      }
+      worker {
+        hourlyRate
+        fName
+        lName
+        speciality
+      }
       description
       title
       sentAt
@@ -179,6 +181,7 @@ export const jobsToWorkerByWorkerId = /* GraphQL */ `
       totalCost
       workerId
       completedAt
+      time
     }
   }
 `;
@@ -225,6 +228,7 @@ export const offersByCustomerId = /* GraphQL */ `
       price
       sentAt
       status
+      suggestedTime
     }
   }
 `;

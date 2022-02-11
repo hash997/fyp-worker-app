@@ -32,7 +32,7 @@ export type JobRequest = {
   title: string;
   description: string;
   totalCost: number;
-  offers?: Array<Offer | null> | null;
+  offers: Offer[] | [];
   sentAt: string;
   completedAt?: string | null;
   speciality: WorkerSpeciality;
@@ -48,8 +48,11 @@ export type JobRequestToWorker = {
   description: string;
   totalCost: number;
   offers?: Array<Offer | null> | null;
+  customer: Customer;
+  worker: Worker;
   sentAt: string;
   completedAt?: string | null;
+  time: Date;
 };
 
 export type Location = {
