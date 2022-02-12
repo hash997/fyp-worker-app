@@ -70,6 +70,7 @@ export default function ModalScreen() {
               isActive: !isEnabled,
               lng: locRes.lat,
               lat: locRes.lng,
+              city: placeInfoRes.city,
             },
           },
         });

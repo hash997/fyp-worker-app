@@ -18,12 +18,13 @@ const JobRequestsScreen = ({
   const { user } = useAuth();
   const currentJobs = useJobRequest();
   const dispatchJobs = useDispatchJobRequest();
+  const [isError, setIsError] = useState("");
 
   const getJobs = async () => {
-    if (!user) {
-      return;
-    }
     try {
+      if (!user) {
+        throw new Error("user is undefined");
+      }
       const jobs: any = await API.graphql({
         query: jobsToWorkerByWorkerId,
         variables: { workerId: user.id },
@@ -36,10 +37,20 @@ const JobRequestsScreen = ({
           jobToWorker: jobs.data.jobsToWorkerByWorkerId,
         },
       });
-    } catch (error) {}
+    } catch (error) {
+      setIsError("Something went wrong while getting jobs");
+    }
   };
 
-  useEffect(() => {}, [currentJobs]);
+  // useEffect(() => {}, [currentJobs]);
+
+  if (isError) {
+    return (
+      <View style={AppStyles.container}>
+        <Text>{isError}</Text>
+      </View>
+    );
+  }
 
   if (!currentJobs.jobToWorker || currentJobs.jobToWorker.length === 0) {
     return (

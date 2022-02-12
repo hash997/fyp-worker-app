@@ -34,19 +34,22 @@ const JobRequests = ({
       });
 
       await getJobs();
+      setLoading(false);
     } catch (error) {
+      console.log("error => ", error);
+
       setError("error accepting job");
       setLoading(false);
     }
   };
 
-  if (loading) {
-    return (
-      <View style={AppStyles.container}>
-        <Text>Loading ...</Text>
-      </View>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <View style={AppStyles.container}>
+  //       <Text>Loading ...</Text>
+  //     </View>
+  //   );
+  // }
 
   if (error) {
     return (
@@ -133,6 +136,7 @@ const JobRequests = ({
           }}
         >
           <TouchableOpacity
+            disabled={loading}
             style={{
               width: "100%",
               backgroundColor:
@@ -146,7 +150,11 @@ const JobRequests = ({
             onPress={handleAcceptJob}
           >
             <Text style={{ color: "white", fontSize: 20 }}>
-              {job.status === JobStatus.CREATED ? "Accepte Job " : job?.status}
+              {job.status === JobStatus.CREATED
+                ? "Accepte Job "
+                : loading
+                ? "Loading ..."
+                : job?.status}
             </Text>
           </TouchableOpacity>
         </View>

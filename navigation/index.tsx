@@ -46,6 +46,10 @@ import {
   onJobCreated,
   onJobToWorkerCreatedSubcription,
 } from "../src/graphql/subscriptions";
+import {
+  useDispatchJobRequest,
+  useJobRequest,
+} from "../state-store/job-requests-provider";
 
 export default function Navigation({
   colorScheme,
@@ -53,6 +57,8 @@ export default function Navigation({
   colorScheme: ColorSchemeName;
 }) {
   const { user, isActive } = useAuth();
+  const currentJobReq = useJobRequest();
+  const dispatchCurretnJobReq = useDispatchJobRequest();
   const [showAlert, setShowAlert] = useState({
     showNearByJob: false,
     showJobRequest: false,
@@ -65,15 +71,27 @@ export default function Navigation({
       {
         query: onJobCreated,
         variables: {
-          city: "Cyberjaya",
-          speciality: "HANDYMAN",
+          city: user.city,
+          speciality: user.speciality,
         },
       }
       // @ts-ignore
     ).subscribe({
       // @ts-ignore
       next: ({ _, value }) => {
-        // console.log("values", value);
+        console.log("value.data.onJobCreated", value.data.onJobCreated);
+
+        // dispatchCurretnJobReq({
+        //   type: "update",
+        //   payload: {
+        //     ...currentJobReq,
+        //     nearybyJobs: {
+        //       ...currentJobReq.nearybyJobs,
+        //       ...value.data.onJobCreated,
+        //     },
+        //   },
+        // });
+        console.log("value => ", value);
         setShowAlert({ showJobRequest: false, showNearByJob: true });
       },
       //@ts-ignore
@@ -94,6 +112,21 @@ export default function Navigation({
     ).subscribe({
       // @ts-ignore
       next: ({ _, value }) => {
+        console.log(
+          "value.data.onJobToWorkerCreatedSubcription",
+          value.data.onJobToWorkerCreated
+        );
+
+        // dispatchCurretnJobReq({
+        //   type: "update",
+        //   payload: {
+        //     ...currentJobReq,
+        //     jobToWorker: {
+        //       ...currentJobReq.jobToWorker,
+        //       ...value?.data?.onJobToWorkerCreated,
+        //     },
+        //   },
+        // });
         setShowAlert({ showJobRequest: true, showNearByJob: false });
 
         // console.log("values", value);
@@ -112,8 +145,6 @@ export default function Navigation({
 
   useEffect(() => {}, [showAlert]);
 
-  console.log("showAlert", showAlert);
-
   const createTwoButtonAlert = (title: string, description: string) =>
     Alert.alert(title, description, [
       {
@@ -122,7 +153,11 @@ export default function Navigation({
           setShowAlert({ showNearByJob: false, showJobRequest: false }),
         style: "cancel",
       },
-      { text: "OK", onPress: () => console.log("OK Pressed") },
+      {
+        text: "OK",
+        onPress: () =>
+          setShowAlert({ showNearByJob: false, showJobRequest: false }),
+      },
     ]);
 
   return (

@@ -6,12 +6,26 @@ import { JobRequest, Offer, OfferStatus } from "../../src/API";
 import { createOffer, updateJobRequest } from "../../src/graphql/mutations";
 import { useAuth } from "../../state-store/auth-state";
 import { API } from "aws-amplify";
+import DateTimePicker, {
+  WindowsDatePickerChangeEvent,
+} from "@react-native-community/datetimepicker";
 
 const NearbyJobRequest = ({ job }: { job: JobRequest }) => {
   const [offer, setOffer] = useState(0);
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
   const [workerOffer, setWorkerOffer] = useState<Offer | undefined>();
+  // prettier-ignore
+
+  const [date, setDate] = useState(new Date(new Date(`${new Date().getFullYear()}/${new Date().getMonth() + 1}/${new Date().getDate() + 2}`).setHours(10, 0, 0, 0)));
+
+  const onChange = (
+    event: WindowsDatePickerChangeEvent,
+    selectedDate: Date
+  ) => {
+    const currentDate = selectedDate || date;
+    setDate(currentDate);
+  };
 
   const handleSubmitOffer = async () => {
     if (!job.id) throw new Error("job id is undefined");
@@ -23,6 +37,7 @@ const NearbyJobRequest = ({ job }: { job: JobRequest }) => {
       jobId: job.id,
       price: offer,
       workerId: user.id,
+      suggestedTime: date.toISOString(),
     };
     try {
       const createOfferRes = await API.graphql({
@@ -32,6 +47,8 @@ const NearbyJobRequest = ({ job }: { job: JobRequest }) => {
         },
       });
     } catch (error) {
+      console.log("error => ", error);
+
       setLoading(false);
     }
   };
@@ -121,6 +138,64 @@ const NearbyJobRequest = ({ job }: { job: JobRequest }) => {
             onChangeText={(text) => setOffer(+text)}
             placeholder="Enter your offer here"
           />
+        </View>
+        <View
+          style={{
+            width: "100%",
+            display: "flex",
+            marginBottom: 20,
+          }}
+        >
+          <View>
+            <Text
+              style={{
+                fontSize: 15,
+                fontWeight: "500",
+                color: "#136494",
+                margin: 10,
+              }}
+            >
+              Pick Date{" "}
+            </Text>
+          </View>
+          <View
+            style={{
+              marginBottom: 10,
+            }}
+          >
+            <DateTimePicker
+              testID="dateTimePicker"
+              value={date}
+              mode={"date"}
+              maximumDate={
+                new Date(
+                  new Date().getFullYear(),
+                  new Date().getMonth() + 1,
+                  new Date().getDate() + 1
+                )
+              }
+              minimumDate={new Date()}
+              // @ts-ignore
+              onChange={onChange}
+            />
+          </View>
+
+          <View
+            style={{
+              display: "flex",
+              justifyContent: "flex-start",
+              // marginRight: 100,
+            }}
+          >
+            <DateTimePicker
+              testID="dateTimePicker"
+              value={date}
+              mode={"time"}
+              is24Hour={true}
+              // @ts-ignore
+              onChange={onChange}
+            />
+          </View>
         </View>
         <View
           style={{
