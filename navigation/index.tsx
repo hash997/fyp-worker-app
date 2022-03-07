@@ -47,6 +47,7 @@ import {
   onJobToWorkerCreatedSubcription,
 } from "../src/graphql/subscriptions";
 import {
+  ActionType,
   useDispatchJobRequest,
   useJobRequest,
 } from "../state-store/job-requests-provider";
@@ -79,19 +80,19 @@ export default function Navigation({
     ).subscribe({
       // @ts-ignore
       next: ({ _, value }) => {
-        console.log("value.data.onJobCreated", value.data.onJobCreated);
+        // console.log("value.data.onJobCreated", value.data.onJobCreated);
 
-        // dispatchCurretnJobReq({
-        //   type: "update",
-        //   payload: {
-        //     ...currentJobReq,
-        //     nearybyJobs: {
-        //       ...currentJobReq.nearybyJobs,
-        //       ...value.data.onJobCreated,
-        //     },
-        //   },
-        // });
-        console.log("value => ", value);
+        dispatchCurretnJobReq({
+          type: ActionType.ADD_TO_NEARBY_JOBS,
+          payload: {
+            ...currentJobReq,
+            nearybyJobs: [
+              value.data.onJobCreated,
+              ...currentJobReq.nearybyJobs,
+            ],
+          },
+        });
+        // console.log("value => ", value);
         setShowAlert({ showJobRequest: false, showNearByJob: true });
       },
       //@ts-ignore
@@ -112,21 +113,26 @@ export default function Navigation({
     ).subscribe({
       // @ts-ignore
       next: ({ _, value }) => {
+        console.log("value => ", value.data.onJobToWorkerCreated);
         console.log(
-          "value.data.onJobToWorkerCreatedSubcription",
-          value.data.onJobToWorkerCreated
+          "current Jobs.length before ",
+          currentJobReq.jobToWorker.length
         );
+        dispatchCurretnJobReq({
+          type: ActionType.ADD_TO_WORKER_JOBS,
+          payload: {
+            ...currentJobReq,
+            jobToWorker: [
+              value.data.onJobToWorkerCreated,
+              ...currentJobReq.jobToWorker,
+            ],
+          },
+        });
+        // console.log(
+        //   "current Jobs.length after",
+        //   currentJobReq.jobToWorker.length
+        // );
 
-        // dispatchCurretnJobReq({
-        //   type: "update",
-        //   payload: {
-        //     ...currentJobReq,
-        //     jobToWorker: {
-        //       ...currentJobReq.jobToWorker,
-        //       ...value?.data?.onJobToWorkerCreated,
-        //     },
-        //   },
-        // });
         setShowAlert({ showJobRequest: true, showNearByJob: false });
 
         // console.log("values", value);
@@ -141,7 +147,7 @@ export default function Navigation({
       onJobCreatedSub.unsubscribe();
       onJobToWorkerCreatedSub.unsubscribe();
     };
-  }, [user]);
+  }, [user, currentJobReq]);
 
   useEffect(() => {}, [showAlert]);
 

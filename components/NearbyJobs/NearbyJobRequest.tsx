@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Text, View, TouchableOpacity, TextInput } from "react-native";
 import { Entypo } from "@expo/vector-icons";
 import { JobRequest, Offer, OfferStatus } from "../../src/API";
-import { createOffer, updateJobRequest } from "../../src/graphql/mutations";
+import { createOffer } from "../../src/graphql/mutations";
 import { useAuth } from "../../state-store/auth-state";
 import { API } from "aws-amplify";
 import DateTimePicker, {
@@ -38,6 +38,7 @@ const NearbyJobRequest = ({ job }: { job: JobRequest }) => {
       price: offer,
       workerId: user.id,
       suggestedTime: date.toISOString(),
+      vendorsLocation: user.city,
     };
     try {
       const createOfferRes = await API.graphql({
@@ -46,20 +47,17 @@ const NearbyJobRequest = ({ job }: { job: JobRequest }) => {
           createOfferInput: createOfferInput,
         },
       });
+      setLoading(false);
     } catch (error) {
-      console.log("error => ", error);
-
       setLoading(false);
     }
   };
 
   useEffect(() => {
     if (!user) {
-      console.log("user is undefined");
       return;
     }
     if (!job) {
-      console.log("job is undefined");
       return;
     }
     if (!job.offers || job.offers.length === 0) {

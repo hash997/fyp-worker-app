@@ -7,6 +7,7 @@ import { JobRequestToWorker } from "../src/API";
 import { jobsToWorkerByWorkerId } from "../src/graphql/queries";
 import { useAuth } from "../state-store/auth-state";
 import {
+  ActionType,
   useDispatchJobRequest,
   useJobRequest,
 } from "../state-store/job-requests-provider";
@@ -31,7 +32,7 @@ const JobRequestsScreen = ({
       });
 
       dispatchJobs({
-        type: "update",
+        type: ActionType.ADD_TO_WORKER_JOBS,
         payload: {
           ...currentJobs,
           jobToWorker: jobs.data.jobsToWorkerByWorkerId,

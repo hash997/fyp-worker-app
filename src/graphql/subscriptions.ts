@@ -39,20 +39,30 @@ export const onJobToWorkerCreatedSubcription = /* GraphQL */ `
     onJobToWorkerCreated(workerId: $workerId) {
       id
       customerId
-      workerId
       location {
         id
-        customerId
         lng
         lat
-        state
         city
-        address
       }
-      # city
-      status
-      title
+      # customer {
+      #   fName
+      #   lName
+      # }
+      # worker {
+      #   hourlyRate
+      #   fName
+      #   lName
+      #   speciality
+      # }
       description
+      title
+      # sentAt
+      status
+      # totalCost
+      workerId
+      completedAt
+      # time
     }
   }
 `;

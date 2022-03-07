@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { RootTabScreenProps } from "../types/types";
 
 import { ScrollView, View, Text } from "react-native";
@@ -6,9 +6,28 @@ import { ScrollView, View, Text } from "react-native";
 import { useJobRequest } from "../state-store/job-requests-provider";
 import UpcomingJobToWorker from "../components/home/upcoming-job-to-worker";
 import { JobStatus } from "../src/API";
+import { AppStyles } from "../AppStyles";
 
 const HomeScreen = ({ navigation }: RootTabScreenProps<"Home">) => {
   const { jobToWorker, nearybyJobs } = useJobRequest();
+  const currentJobReqs = useJobRequest();
+
+  useEffect(() => {}, [currentJobReqs]);
+
+  // console.log("current jobs => ", currentJobReqs);
+
+  if (
+    !jobToWorker ||
+    jobToWorker.length === 0 ||
+    !nearybyJobs ||
+    nearybyJobs.length === 0
+  ) {
+    return (
+      <View style={AppStyles.container}>
+        <Text>No upcoming jobs</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>

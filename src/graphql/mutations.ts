@@ -100,12 +100,25 @@ export const createOffer = /* GraphQL */ `
   mutation CreateOffer($createOfferInput: CreateOfferInput!) {
     createOffer(createOfferInput: $createOfferInput) {
       id
+      jobId
       customerId
       workerId
-      jobId
-      price
       sentAt
+      price
       status
+      suggestedTime
+      jobRequest {
+        city
+        completedAt
+        customerId
+        description
+        id
+        speciality
+        sentAt
+        status
+        title
+        totalCost
+      }
     }
   }
 `;

@@ -36,8 +36,6 @@ const JobRequests = ({
       await getJobs();
       setLoading(false);
     } catch (error) {
-      console.log("error => ", error);
-
       setError("error accepting job");
       setLoading(false);
     }
@@ -111,7 +109,7 @@ const JobRequests = ({
           </View>
           <View style={{ marginTop: 10 }}>
             <Text style={{ fontSize: 10, color: "#0C4160", fontWeight: "400" }}>
-              Prefered Time
+              Preferred Time
             </Text>
             <Text style={{ color: "#0C4160" }}>
               {dayToString(new Date(job?.time).getDay())}{" "}

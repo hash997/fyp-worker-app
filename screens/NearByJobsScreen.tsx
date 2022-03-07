@@ -4,17 +4,16 @@ import NearbyJobRequest from "../components/NearbyJobs/NearbyJobRequest";
 import { AppStyles } from "../AppStyles";
 import { API } from "aws-amplify";
 import { useAuth } from "../state-store/auth-state";
-import { jobsByCityAndSpeciality } from "../src/graphql/queries";
-import { JobRequest } from "../src/API";
-import { getCurretnLoc } from "../helpers/get-current-loc";
-import { getPlaceInformation } from "../helpers/get-location-details";
 import { useJobRequest } from "../state-store/job-requests-provider";
 
 export const NearByJobsScreen = () => {
   const { user, isActive } = useAuth();
+  const currentJobReqs = useJobRequest();
   const { nearybyJobs } = useJobRequest();
 
-  useEffect(() => {}, [nearybyJobs]);
+  useEffect(() => {}, [currentJobReqs]);
+
+  console.log("current jobs => ", currentJobReqs);
 
   if (!isActive) {
     return (
@@ -34,6 +33,10 @@ export const NearByJobsScreen = () => {
       </View>
     );
   }
+
+  // console.log("===============================");
+  // console.log("nearybyJobs", nearybyJobs);
+
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
       <ScrollView>

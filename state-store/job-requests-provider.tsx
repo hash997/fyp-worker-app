@@ -22,6 +22,12 @@ const initialState: NearByJobs = {
   nearybyJobs: [],
   jobToWorker: [],
 };
+
+export enum ActionType {
+  ADD_TO_NEARBY_JOBS = "ADD_TO_NEARBY_JOBS",
+  ADD_TO_WORKER_JOBS = "ADD_TO_WORKER_JOBS",
+}
+
 interface Action {
   type: string;
   payload?: NearByJobs;
@@ -34,10 +40,15 @@ const JobRequestDispatchContext = createContext<Dispatch<Action>>(
 
 const reducer = (currentJob: NearByJobs, action: Action) => {
   switch (action.type) {
-    case "update":
+    case ActionType.ADD_TO_NEARBY_JOBS:
       if (!action.payload) throw new Error("payload is empty");
 
-      return (currentJob = action.payload);
+      return { ...currentJob, nearybyJobs: action.payload.nearybyJobs };
+    case ActionType.ADD_TO_WORKER_JOBS:
+      if (!action.payload) throw new Error("payload is empty");
+
+      return { ...currentJob, jobToWorker: action.payload?.jobToWorker };
+
     case "clear":
       return (currentJob = initialState);
     default:
@@ -83,6 +94,14 @@ export const JobRequestProvider: React.FC = ({ children }) => {
         variables: { workerId: user.id },
       });
 
+      dispatch({
+        type: ActionType.ADD_TO_WORKER_JOBS,
+        payload: {
+          ...currentJobs,
+          jobToWorker: jobsToWorker.data.jobsToWorkerByWorkerId,
+        },
+      });
+
       const nearByJobs: any = await API.graphql({
         query: jobsByCityAndSpeciality,
 
@@ -93,11 +112,10 @@ export const JobRequestProvider: React.FC = ({ children }) => {
       });
 
       dispatch({
-        type: "update",
+        type: ActionType.ADD_TO_NEARBY_JOBS,
         payload: {
           ...currentJobs,
           nearybyJobs: nearByJobs.data.jobsByCityAndSpeciality,
-          jobToWorker: jobsToWorker.data.jobsToWorkerByWorkerId,
         },
       });
       setIsLoading({ ...isLoading, gettingJobs: false });
@@ -111,8 +129,6 @@ export const JobRequestProvider: React.FC = ({ children }) => {
   useEffect(() => {
     if (!user?.id) return;
     getJobs();
-
-    console.log("userID => ", user.id);
   }, [user, isActive]);
   return (
     <JobRequestDispatchContext.Provider value={dispatch}>

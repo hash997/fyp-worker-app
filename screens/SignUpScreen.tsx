@@ -91,16 +91,6 @@ const SignUp = ({ navigation }: RootStackScreenProps<"SignUp">) => {
   const pickerRef = useRef();
   const [step, setStep] = useState(0);
 
-  function open() {
-    // @ts-ignore
-    pickerRef.current.focus();
-  }
-
-  function close() {
-    // @ts-ignore
-    pickerRef.current.blur();
-  }
-
   const createUserInBD = async (values: signUpVals) => {
     try {
       const createCstmrRes = API.graphql({
@@ -127,7 +117,7 @@ const SignUp = ({ navigation }: RootStackScreenProps<"SignUp">) => {
   const createCredForWrkr = async (values: signUpVals, createWrkrData: any) => {
     try {
       const newCstmrToBeSavedOnCognito = {
-        username: `${values.firstName}`,
+        username: `${values.firstName}${values.lastName}`,
         password: values.password,
         attributes: {
           email: values.email,
@@ -138,13 +128,18 @@ const SignUp = ({ navigation }: RootStackScreenProps<"SignUp">) => {
       const { user } = await Auth.signUp(newCstmrToBeSavedOnCognito);
       // const createCstmrData = await user;
       setAuthRes(user);
-      navigation.navigate("Root");
-    } catch (error) {}
+      // navigation.navigate("Root");
+    } catch (error) {
+      // console.log("shit went south creating user", error);
+    }
   };
 
   const submitValidationCode = async (code: string) => {
     try {
       const confrimRes = await Auth.confirmSignUp(authRes?.username, code);
+      // console.log("confirmRes", confrimRes);
+
+      navigation.navigate("Root");
     } catch (error) {
       return error;
     }
@@ -166,7 +161,7 @@ const SignUp = ({ navigation }: RootStackScreenProps<"SignUp">) => {
                   try {
                     setSubmitting(true);
                     createUserInBD(values);
-                    // createCredForCstmr(values);
+                    // createCredForWrkr(values);
                     setSubmitting(false);
                     setIsConfirmationCode(true);
                     setSuccess(true);

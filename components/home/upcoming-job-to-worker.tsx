@@ -128,7 +128,8 @@ const UpcomingJobToWorker = ({ job }: { job: JobRequestToWorker }) => {
             <View
               style={{
                 width: "60%",
-                backgroundColor: "#ffc0cb",
+                borderWidth: 1,
+                borderColor: "red",
                 padding: 7,
                 margin: 3,
                 borderRadius: 10,
