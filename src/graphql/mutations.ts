@@ -118,6 +118,7 @@ export const createOffer = /* GraphQL */ `
         status
         title
         totalCost
+        preferedTime
       }
     }
   }

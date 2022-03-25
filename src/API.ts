@@ -36,6 +36,8 @@ export type JobRequest = {
   sentAt: string;
   completedAt?: string | null;
   speciality: WorkerSpeciality;
+  isUrgent: boolean;
+  preferedTime: string;
 };
 export type JobRequestToWorker = {
   __typename: "JobRequest";

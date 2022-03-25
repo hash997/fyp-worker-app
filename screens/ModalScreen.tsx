@@ -130,6 +130,7 @@ export default function ModalScreen() {
           disabled={loading}
         />
       )}
+      {<Text>Currnent Location: {user?.city}</Text>}
       <Button title="Sign Out" onPress={() => Auth.signOut()} />
     </View>
   );

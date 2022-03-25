@@ -1,6 +1,12 @@
 import { AppStyles } from "../../AppStyles";
 import React, { useEffect, useState } from "react";
-import { Text, View, TouchableOpacity, TextInput } from "react-native";
+import {
+  Text,
+  View,
+  TouchableOpacity,
+  TextInput,
+  MaskedViewComponent,
+} from "react-native";
 import { Entypo } from "@expo/vector-icons";
 import { JobRequest, Offer, OfferStatus } from "../../src/API";
 import { createOffer } from "../../src/graphql/mutations";
@@ -9,6 +15,7 @@ import { API } from "aws-amplify";
 import DateTimePicker, {
   WindowsDatePickerChangeEvent,
 } from "@react-native-community/datetimepicker";
+import moment from "moment";
 
 const NearbyJobRequest = ({ job }: { job: JobRequest }) => {
   const [offer, setOffer] = useState(0);
@@ -17,7 +24,15 @@ const NearbyJobRequest = ({ job }: { job: JobRequest }) => {
   const [workerOffer, setWorkerOffer] = useState<Offer | undefined>();
   // prettier-ignore
 
-  const [date, setDate] = useState(new Date(new Date(`${new Date().getFullYear()}/${new Date().getMonth() + 1}/${new Date().getDate() + 2}`).setHours(10, 0, 0, 0)));
+  const [date, setDate] = useState(
+    new Date(
+      new Date(
+        `${new Date().getFullYear()}/${new Date().getMonth() + 1}/${
+          new Date().getDate() + 2
+        }`
+      ).setHours(10, 0, 0, 0)
+    )
+  );
 
   const onChange = (
     event: WindowsDatePickerChangeEvent,
@@ -121,7 +136,21 @@ const NearbyJobRequest = ({ job }: { job: JobRequest }) => {
             </View>
           </View>
           <Text style={{ color: "#0C4160" }}>{job.description}</Text>
+          <Text style={{ marginTop: 10 }}>Customer's preferred Time: </Text>
+
+          {new Date(job.preferedTime).getFullYear() < 2000 ? (
+            <Text>Customer would like this job to be done asap.</Text>
+          ) : (
+            <>
+              <Text style={{ marginTop: 5, fontSize: 18 }}>
+                {moment(new Date(job.preferedTime)).format(
+                  "MMMM Do YYYY, h:mm a"
+                )}
+              </Text>
+            </>
+          )}
         </View>
+
         <View style={{ marginTop: 10 }}>
           <TextInput
             style={{
@@ -137,64 +166,7 @@ const NearbyJobRequest = ({ job }: { job: JobRequest }) => {
             placeholder="Enter your offer here"
           />
         </View>
-        <View
-          style={{
-            width: "100%",
-            display: "flex",
-            marginBottom: 20,
-          }}
-        >
-          <View>
-            <Text
-              style={{
-                fontSize: 15,
-                fontWeight: "500",
-                color: "#136494",
-                margin: 10,
-              }}
-            >
-              Pick Date{" "}
-            </Text>
-          </View>
-          <View
-            style={{
-              marginBottom: 10,
-            }}
-          >
-            <DateTimePicker
-              testID="dateTimePicker"
-              value={date}
-              mode={"date"}
-              maximumDate={
-                new Date(
-                  new Date().getFullYear(),
-                  new Date().getMonth() + 1,
-                  new Date().getDate() + 1
-                )
-              }
-              minimumDate={new Date()}
-              // @ts-ignore
-              onChange={onChange}
-            />
-          </View>
 
-          <View
-            style={{
-              display: "flex",
-              justifyContent: "flex-start",
-              // marginRight: 100,
-            }}
-          >
-            <DateTimePicker
-              testID="dateTimePicker"
-              value={date}
-              mode={"time"}
-              is24Hour={true}
-              // @ts-ignore
-              onChange={onChange}
-            />
-          </View>
-        </View>
         <View
           style={{
             flexDirection: "row",
@@ -203,6 +175,7 @@ const NearbyJobRequest = ({ job }: { job: JobRequest }) => {
           }}
         >
           <TouchableOpacity
+            disabled={!offer}
             style={{
               width: "100%",
               backgroundColor: !workerOffer

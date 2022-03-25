@@ -125,6 +125,8 @@ export const jobsByCityAndSpeciality = /* GraphQL */ `
       completedAt
       customerId
       description
+      preferedTime
+      isUrgent
       location {
         address
         city

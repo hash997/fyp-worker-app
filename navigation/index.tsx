@@ -45,6 +45,7 @@ import { API } from "aws-amplify";
 import {
   onJobCreated,
   onJobToWorkerCreatedSubcription,
+  onJobUpdated,
 } from "../src/graphql/subscriptions";
 import {
   ActionType,
@@ -63,6 +64,7 @@ export default function Navigation({
   const [showAlert, setShowAlert] = useState({
     showNearByJob: false,
     showJobRequest: false,
+    offerAccepted: false,
   });
 
   useEffect(() => {
@@ -93,7 +95,11 @@ export default function Navigation({
           },
         });
         // console.log("value => ", value);
-        setShowAlert({ showJobRequest: false, showNearByJob: true });
+        setShowAlert({
+          showJobRequest: false,
+          offerAccepted: false,
+          showNearByJob: true,
+        });
       },
       //@ts-ignore
       error: (error) => {
@@ -113,11 +119,6 @@ export default function Navigation({
     ).subscribe({
       // @ts-ignore
       next: ({ _, value }) => {
-        console.log("value => ", value.data.onJobToWorkerCreated);
-        console.log(
-          "current Jobs.length before ",
-          currentJobReq.jobToWorker.length
-        );
         dispatchCurretnJobReq({
           type: ActionType.ADD_TO_WORKER_JOBS,
           payload: {
@@ -128,14 +129,36 @@ export default function Navigation({
             ],
           },
         });
-        // console.log(
-        //   "current Jobs.length after",
-        //   currentJobReq.jobToWorker.length
-        // );
 
-        setShowAlert({ showJobRequest: true, showNearByJob: false });
+        setShowAlert({
+          showJobRequest: true,
+          showNearByJob: false,
+          offerAccepted: false,
+        });
+      },
+      //@ts-ignore
+      error: (error) => {
+        console.warn(error);
+      },
+    });
 
-        // console.log("values", value);
+    const onJobAcceptedSub = API.graphql(
+      // @ts-ignore
+      {
+        query: onJobUpdated,
+        variables: {
+          workerId: user.id,
+        },
+      }
+      // @ts-ignore
+    ).subscribe({
+      // @ts-ignore
+      next: ({ _, value }) => {
+        setShowAlert({
+          showNearByJob: false,
+          showJobRequest: false,
+          offerAccepted: true,
+        });
       },
       //@ts-ignore
       error: (error) => {
@@ -146,6 +169,7 @@ export default function Navigation({
     return () => {
       onJobCreatedSub.unsubscribe();
       onJobToWorkerCreatedSub.unsubscribe();
+      onJobAcceptedSub.unsubscribe();
     };
   }, [user, currentJobReq]);
 
@@ -156,13 +180,21 @@ export default function Navigation({
       {
         text: "Cancel",
         onPress: () =>
-          setShowAlert({ showNearByJob: false, showJobRequest: false }),
+          setShowAlert({
+            showNearByJob: false,
+            showJobRequest: false,
+            offerAccepted: false,
+          }),
         style: "cancel",
       },
       {
         text: "OK",
         onPress: () =>
-          setShowAlert({ showNearByJob: false, showJobRequest: false }),
+          setShowAlert({
+            showNearByJob: false,
+            showJobRequest: false,
+            offerAccepted: false,
+          }),
       },
     ]);
 
@@ -211,7 +243,11 @@ function RootNavigator() {
         options={{ title: "Oops!" }}
       />
       <Stack.Group screenOptions={{ presentation: "modal" }}>
-        <Stack.Screen name="Modal" component={ModalScreen} />
+        <Stack.Screen
+          name="Modal"
+          component={ModalScreen}
+          options={{ title: "Status" }}
+        />
       </Stack.Group>
     </Stack.Navigator>
   );
